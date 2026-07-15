@@ -1,0 +1,18 @@
+"use client"
+
+import { ThemeProvider as NextThemesProvider, type ThemeProviderProps } from "next-themes"
+import { useSyncExternalStore } from "react"
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+
+  if (!mounted) {
+    return <>{children}</>
+  }
+
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+}
