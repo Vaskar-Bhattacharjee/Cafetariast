@@ -1,51 +1,16 @@
 import { relations } from "drizzle-orm";
-import {
-  pgTable,
-  text,
-  timestamp,
-  boolean,
-  integer,
-  varchar,
-  index,
-} from "drizzle-orm/pg-core";
-export const menuCategoriesTable = pgTable("menu_categories", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  slug: varchar({ length: 100 }).notNull().unique(),
-  label: varchar({ length: 255 }).notNull(),
-  number: varchar({ length: 10 }).notNull(),
-});
-
-export const menuItemsTable = pgTable("menu_items", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  categoryId: integer()
-    .notNull()
-    .references(() => menuCategoriesTable.id),
-  name: varchar({ length: 255 }).notNull(),
-  description: text().notNull(),
-  price: integer().notNull(),
-  image: text().notNull(),
-  imagePublicId: varchar({ length: 255 }).notNull(),
-  alt: varchar({ length: 255 }).notNull(),
-});
+import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
-  role: text("role", {
-    enum: ["user", "admin"],
-  })
-    .default("user")
-    .notNull(),
-    
-  banned: boolean("banned").default(false),
-  banReason: text("ban_reason"),
-  banExpires: timestamp("ban_expires"),
+  image: text("image"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
-    .$onUpdate(() => new Date())
+    .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
 
@@ -57,11 +22,10 @@ export const session = pgTable(
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
-      .$onUpdate(() => new Date())
+      .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
-    impersonatedBy: text("impersonated_by"),
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
@@ -87,7 +51,7 @@ export const account = pgTable(
     password: text("password"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
-      .$onUpdate(() => new Date())
+      .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
   (table) => [index("account_userId_idx").on(table.userId)],
@@ -103,7 +67,7 @@ export const verification = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
-      .$onUpdate(() => new Date())
+      .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
   (table) => [index("verification_identifier_idx").on(table.identifier)],
