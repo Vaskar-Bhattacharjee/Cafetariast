@@ -6,9 +6,12 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(request: Request) {
   try {
-    const { id } = await request.json();
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    const validatedId = parseInt(id as string);
+    
 
-    if (!id || typeof id !== "number") {
+    if (!validatedId || typeof validatedId !== "number") {
       return NextResponse.json(
         { message: "Valid item id is required" },
         { status: 400 },
@@ -17,7 +20,7 @@ export async function DELETE(request: Request) {
 
     const [deletedItem] = await db
       .delete(menuItemsTable)
-      .where(eq(menuItemsTable.id, id))
+      .where(eq(menuItemsTable.id, validatedId))
       .returning();
 
     if (!deletedItem) {

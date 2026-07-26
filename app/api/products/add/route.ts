@@ -29,7 +29,7 @@ function sanitizeFilename(originalName: string): string {
 export async function POST(request: Request) {
  try {
     const data = await request.formData()
-    const file = data.get("file") as File
+    const file = data.get("image") as File
     if (!file || !(file instanceof File)) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 })
     }

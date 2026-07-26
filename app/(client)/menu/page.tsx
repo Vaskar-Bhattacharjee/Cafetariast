@@ -5,166 +5,183 @@ import { Section } from "@/app/components/section/section"
 import Image from "next/image"
 import { IconXFilled } from "@tabler/icons-react"
 import { AnimatePresence, motion } from "framer-motion"
+import axios from "axios"
 
-const menu = [
-    {
-        id: "Coffea",
-        label: "Coffea",
-        number: "01",
-        items: [
-            {
-                name: "Espresso",
-                description: "Single origin, dark and direct",
-                price: "2.80",
-                image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=1200&auto=format&fit=crop",
-                alt: "Espresso"
-            },
-            {
-                name: "Americano",
-                description: "Pulled long with hot water",
-                price: "3.20",
-                image: "https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YW1lcmljYW5vJTIwY29mZmVlfGVufDB8fDB8fHww",
-                alt: "Americano"
-            },
-            {
-                name: "Flat White",
-                description: "Double ristretto, silky microfoam",
-                price: "3.80",
-                image: "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?q=80&w=1200&auto=format&fit=crop",
-                alt: "Flat White"
-            },
-            {
-                name: "Cappuccino",
-                description: "Equal parts espresso, foam, and patience",
-                price: "3.60",
-                image: "https://images.unsplash.com/photo-1624528201496-121b78e2db93?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Q2FwdWNjaW5vJTIwY29mZmV8ZW58MHx8MHx8fDA%3D",
-                alt: "Cappuccino"
-            },
-            {
-                name: "Latte",
-                description: "Smooth and familiar, whole milk",
-                price: "3.80",
-                image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1200&auto=format&fit=crop",
-                alt: "Latte"
-            },
-            {
-                name: "Pour Over",
-                description: "Filter coffee, brewed to order",
-                price: "4.50",
-                image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1200&auto=format&fit=crop",
-                alt: "Pour Over"
-            },
-        ],
-    },
-    {
-        id: "drinks",
-        label: "Cold Drinks",
-        number: "02",
-        items: [
-            {
-                name: "Iced Latte",
-                description: "Cold milk, double shot, served simply",
-                price: "4.00",
-                image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=1200&auto=format&fit=crop",
-                alt: "Iced Latte"
-            },
-            {
-                name: "Cold Brew",
-                description: "Steeped for 16 hours, served over ice",
-                price: "4.20",
-                image: "https://images.unsplash.com/photo-1565990436705-4bc429d16511?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNvbGQlMjBicmV3JTIwY29mZmVlfGVufDB8fDB8fHww",
-                alt: "Cold Brew"
-            },
-            {
-                name: "Iced Matcha",
-                description: "Ceremonial grade, oat milk",
-                price: "4.50",
-                image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?q=80&w=1200&auto=format&fit=crop",
-                alt: "Iced Matcha"
-            },
-            {
-                name: "Sparkling Water",
-                description: "San Pellegrino, always cold",
-                price: "2.00",
-                image: "https://images.unsplash.com/photo-1548780607-46c78f38182d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHNwYXJrbGluZyUyMHdhdGVyfGVufDB8fDB8fHww",
-                alt: "Sparkling Water"
-            },
-        ],
-    },
-    {
-        id: "pastries",
-        label: "Pastries",
-        number: "03",
-        items: [
-            {
-                name: "Croissant",
-                description: "Butter layers, baked fresh before opening",
-                price: "3.50",
-                image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=1200&auto=format&fit=crop",
-                alt: "Croissant"
-            },
-            {
-                name: "Banana Bread",
-                description: "Dense, moist, a little too easy to finish",
-                price: "3.20",
-                image: "https://images.unsplash.com/photo-1607958996333-41aef7caefaa?q=80&w=1200&auto=format&fit=crop",
-                alt: "Banana Bread"
-            },
-            {
-                name: "Almond Tart",
-                description: "Short crust, frangipane, toasted flake",
-                price: "4.20",
-                image: "https://images.unsplash.com/photo-1519869325930-281384150729?q=80&w=1200&auto=format&fit=crop",
-                alt: "Almond Tart"
-            },
-            {
-                name: "Cinnamon Roll",
-                description: "Pulled from the oven at 8 am",
-                price: "3.80",
-                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop",
-                alt: "Cinnamon Roll"
-            },
-        ],
-    },
-    {
-        id: "food",
-        label: "Food",
-        number: "04",
-        items: [
-            {
-                name: "Avocado Toast",
-                description: "Sourdough, chilli flakes, lemon",
-                price: "7.50",
-                image: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77?q=80&w=1200&auto=format&fit=crop",
-                alt: "Avocado Toast"
-            },
-            {
-                name: "Granola Bowl",
-                description: "House granola, yogurt, seasonal fruit",
-                price: "6.80",
-                image: "https://images.unsplash.com/photo-1517881917430-e70dfb3610aa?q=80&w=1200&auto=format&fit=crop",
-                alt: "Granola Bowl"
-            },
-            {
-                name: "Egg on Toast",
-                description: "Free range, sourdough, sea salt",
-                price: "6.50",
-                image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=1200&auto=format&fit=crop",
-                alt: "Egg on Toast"
-            },
-            {
-                name: "Cheese Toastie",
-                description: "Three cheese, slow-toasted",
-                price: "5.80",
-                image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=1200&auto=format&fit=crop",
-                alt: "Cheese Toastie"
-            },
-        ],
-    },
-]
+// const menu = [
+//     {
+//         id: "Coffea",
+//         label: "Coffea",
+//         number: "01",
+//         items: [
+//             {
+//                 name: "Espresso",
+//                 description: "Single origin, dark and direct",
+//                 price: "2.80",
+//                 image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Espresso"
+//             },
+//             {
+//                 name: "Americano",
+//                 description: "Pulled long with hot water",
+//                 price: "3.20",
+//                 image: "https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YW1lcmljYW5vJTIwY29mZmVlfGVufDB8fDB8fHww",
+//                 alt: "Americano"
+//             },
+//             {
+//                 name: "Flat White",
+//                 description: "Double ristretto, silky microfoam",
+//                 price: "3.80",
+//                 image: "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Flat White"
+//             },
+//             {
+//                 name: "Cappuccino",
+//                 description: "Equal parts espresso, foam, and patience",
+//                 price: "3.60",
+//                 image: "https://images.unsplash.com/photo-1624528201496-121b78e2db93?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Q2FwdWNjaW5vJTIwY29mZmV8ZW58MHx8MHx8fDA%3D",
+//                 alt: "Cappuccino"
+//             },
+//             {
+//                 name: "Latte",
+//                 description: "Smooth and familiar, whole milk",
+//                 price: "3.80",
+//                 image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Latte"
+//             },
+//             {
+//                 name: "Pour Over",
+//                 description: "Filter coffee, brewed to order",
+//                 price: "4.50",
+//                 image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Pour Over"
+//             },
+//         ],
+//     },
+//     {
+//         id: "drinks",
+//         label: "Cold Drinks",
+//         number: "02",
+//         items: [
+//             {
+//                 name: "Iced Latte",
+//                 description: "Cold milk, double shot, served simply",
+//                 price: "4.00",
+//                 image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Iced Latte"
+//             },
+//             {
+//                 name: "Cold Brew",
+//                 description: "Steeped for 16 hours, served over ice",
+//                 price: "4.20",
+//                 image: "https://images.unsplash.com/photo-1565990436705-4bc429d16511?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNvbGQlMjBicmV3JTIwY29mZmVlfGVufDB8fDB8fHww",
+//                 alt: "Cold Brew"
+//             },
+//             {
+//                 name: "Iced Matcha",
+//                 description: "Ceremonial grade, oat milk",
+//                 price: "4.50",
+//                 image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Iced Matcha"
+//             },
+//             {
+//                 name: "Sparkling Water",
+//                 description: "San Pellegrino, always cold",
+//                 price: "2.00",
+//                 image: "https://images.unsplash.com/photo-1548780607-46c78f38182d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHNwYXJrbGluZyUyMHdhdGVyfGVufDB8fDB8fHww",
+//                 alt: "Sparkling Water"
+//             },
+//         ],
+//     },
+//     {
+//         id: "pastries",
+//         label: "Pastries",
+//         number: "03",
+//         items: [
+//             {
+//                 name: "Croissant",
+//                 description: "Butter layers, baked fresh before opening",
+//                 price: "3.50",
+//                 image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Croissant"
+//             },
+//             {
+//                 name: "Banana Bread",
+//                 description: "Dense, moist, a little too easy to finish",
+//                 price: "3.20",
+//                 image: "https://images.unsplash.com/photo-1607958996333-41aef7caefaa?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Banana Bread"
+//             },
+//             {
+//                 name: "Almond Tart",
+//                 description: "Short crust, frangipane, toasted flake",
+//                 price: "4.20",
+//                 image: "https://images.unsplash.com/photo-1519869325930-281384150729?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Almond Tart"
+//             },
+//             {
+//                 name: "Cinnamon Roll",
+//                 description: "Pulled from the oven at 8 am",
+//                 price: "3.80",
+//                 image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Cinnamon Roll"
+//             },
+//         ],
+//     },
+//     {
+//         id: "food",
+//         label: "Food",
+//         number: "04",
+//         items: [
+//             {
+//                 name: "Avocado Toast",
+//                 description: "Sourdough, chilli flakes, lemon",
+//                 price: "7.50",
+//                 image: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Avocado Toast"
+//             },
+//             {
+//                 name: "Granola Bowl",
+//                 description: "House granola, yogurt, seasonal fruit",
+//                 price: "6.80",
+//                 image: "https://images.unsplash.com/photo-1517881917430-e70dfb3610aa?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Granola Bowl"
+//             },
+//             {
+//                 name: "Egg on Toast",
+//                 description: "Free range, sourdough, sea salt",
+//                 price: "6.50",
+//                 image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Egg on Toast"
+//             },
+//             {
+//                 name: "Cheese Toastie",
+//                 description: "Three cheese, slow-toasted",
+//                 price: "5.80",
+//                 image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=1200&auto=format&fit=crop",
+//                 alt: "Cheese Toastie"
+//             },
+//         ],
+//     },
+// ]
+type MenuItem = {
+    id: number
+    name: string
+    description: string
+    price: number
+    image: string
+    alt: string
+}
+
+type MenuCategory = {
+    id: string
+    label: string
+    number: string
+    items: MenuItem[]
+}
 
 export default function MenuPage() {
-    const [active, setActive] = useState(menu[0].id)
+    const [menu, setMenu] = useState<MenuCategory[]>([])
+    const [active, setActive] = useState("")
     const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({})
     const [selectedItem, setSelectedItem] = useState<{
         name: string
@@ -199,6 +216,22 @@ export default function MenuPage() {
         setActive(id)
         sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" })
     }
+
+    useEffect(() => {
+        const fetchMenu = async () => {
+            try {
+                const res = await axios.get(`/api/products/get-all-products`)
+                const data: MenuCategory[] = res.data.products
+                setMenu(data)
+                if (data.length > 0) {
+                    setActive(data[0].id)
+                }
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        fetchMenu()
+    }, [])
 
     return (
         <div className={`relative bg-neutral-50 dark:bg-neutral-900`}>
@@ -266,7 +299,7 @@ export default function MenuPage() {
                                         {ItemInfo(selectedItem.name)?.name}
                                     </h2>
                                     <span className="font-inter text-[22px] font-semibold tracking-tight text-white shrink-0 pt-px">
-                                        £{ItemInfo(selectedItem.name)?.price}
+                                        £{((ItemInfo(selectedItem.name)?.price ?? 0) / 100).toFixed(2)}
                                     </span>
                                 </div>
 
@@ -291,8 +324,8 @@ export default function MenuPage() {
             </AnimatePresence>
             <BGNoise />
             <HeadingSection />
-            <Menubar active={active} scrollTo={scrollTo} />
-            <ProductList sectionRefs={sectionRefs} setSelectedItem={setSelectedItem} />
+            <Menubar active={active} scrollTo={scrollTo} menu={menu} />
+            <ProductList sectionRefs={sectionRefs} setSelectedItem={setSelectedItem} menu={menu} />
 
 
         </div>
@@ -329,7 +362,7 @@ const HeadingSection = () => {
     )
 }
 
-const Menubar = ({ active, scrollTo }: { active: string; scrollTo: (id: string) => void }) => {
+const Menubar = ({ active, scrollTo, menu }: { active: string; scrollTo: (id: string) => void; menu: MenuCategory[] }) => {
     return (
             <div className="sticky top-0 z-10 border-b border-neutral-200 bg-neutral-50/80 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-900/80">
                 <div className="mx-auto max-w-7xl px-4 md:px-8">
@@ -352,7 +385,7 @@ const Menubar = ({ active, scrollTo }: { active: string; scrollTo: (id: string) 
     )
 }
 
-const ProductList = ({ sectionRefs, setSelectedItem }: { sectionRefs: React.MutableRefObject<Record<string, HTMLElement | null>>; setSelectedItem: React.Dispatch<React.SetStateAction<{ name: string; x: number; y: number; } | null>> }) => {
+const ProductList = ({ sectionRefs, setSelectedItem, menu }: { sectionRefs: React.MutableRefObject<Record<string, HTMLElement | null>>; setSelectedItem: React.Dispatch<React.SetStateAction<{ name: string; x: number; y: number; } | null>>; menu: MenuCategory[] }) => {
     return (
             <div className="mx-auto max-w-7xl space-y-20 px-4 py-10 md:px-8 md:py-14">
                 {menu.map((cat) => (
@@ -394,7 +427,7 @@ const ProductList = ({ sectionRefs, setSelectedItem }: { sectionRefs: React.Muta
                                         </p>
                                     </div>
                                     <p className="shrink-0 font-inter text-lg font-medium text-neutral-600 dark:text-neutral-400">
-                                        £{item.price}
+                                        £{(item.price / 100).toFixed(2)}
                                     </p>
                                 </div>
                             ))}
