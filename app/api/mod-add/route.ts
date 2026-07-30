@@ -12,6 +12,7 @@ const addModSchema = z.object({
 export async function POST(request: Request) {
     try {
         const session = await auth.api.getSession({ headers: request.headers });
+        console.log("Session:", session);
 
         if (!session || (session.user as UserWithRole).role !== "admin") {
         return NextResponse.json(
@@ -24,14 +25,26 @@ export async function POST(request: Request) {
         const validatedData = addModSchema.parse(data)
         const name = validatedData.email.split("@")[0]
 
-        const newUser = await auth.api.createUser({
-           body: {
-            email: validatedData.email,
-            password: validatedData.password,
-            name,
-            role: validatedData.role as "admin" | "user",
-           }
-        })
+    
+                let newUser;
+        try {
+            newUser = await auth.api.createUser({
+                body: {
+                    email: validatedData.email,
+                    password: validatedData.password,
+                    name,
+                    role: validatedData.role as "admin" | "moderator",
+                }
+            });
+            console.log("newUser:", newUser);
+        } catch (e) {
+            console.error("createUser error:", e);
+            if (e instanceof Error && 'body' in e && 'statusCode' in e) {
+                const apiError = e as Error & { body: { message: string }; statusCode: number };
+                return NextResponse.json({ error: apiError.body.message }, { status: apiError.statusCode });
+            }
+            return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+        }
 
         return NextResponse.json({ message: "Moderator added successfully" }, { status: 200 })
         
@@ -41,6 +54,6 @@ export async function POST(request: Request) {
         if (error instanceof z.ZodError) {
             return NextResponse.json({ error: error.issues }, { status: 400 })
         }
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+        return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
     }
 }
