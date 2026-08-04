@@ -20,7 +20,7 @@ export const Navbar = () => {
 
 export const DesktopNavbar = () => {
     return (
-        <nav className="max-w-7xl mx-auto h-16 bg-zinc-50 dark:bg-neutral-900 flex items-center justify-between lg:px-10 z-20">
+        <nav className="max-w-7xl mx-auto h-16 bg-zinc-50 dark:bg-neutral-900 flex items-center justify-between lg:px-0 z-20">
             <div className="flex items-center justify-start -ml-10"><LogoImge width={100} height={100} className=""/><p className="text-2xl font-bold -ml-7">afeteriast</p></div>
             <div className="flex items-center space-x-4">
                 {MenuItem.map((item) => (

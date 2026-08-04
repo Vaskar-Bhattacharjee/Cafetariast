@@ -226,6 +226,7 @@ export default function MenuPage() {
                 if (data.length > 0) {
                     setActive(data[0].id)
                 }
+                
             } catch (error) {
                 console.error(error)
             }
@@ -385,7 +386,7 @@ const Menubar = ({ active, scrollTo, menu }: { active: string; scrollTo: (id: st
     )
 }
 
-const ProductList = ({ sectionRefs, setSelectedItem, menu }: { sectionRefs: React.MutableRefObject<Record<string, HTMLElement | null>>; setSelectedItem: React.Dispatch<React.SetStateAction<{ name: string; x: number; y: number; } | null>>; menu: MenuCategory[] }) => {
+const ProductList = ({ sectionRefs, setSelectedItem, menu }: { sectionRefs: React.RefObject<Record<string, HTMLElement | null>>; setSelectedItem: React.Dispatch<React.SetStateAction<{ name: string; x: number; y: number; } | null>>; menu: MenuCategory[] }) => {
     return (
             <div className="mx-auto max-w-7xl space-y-20 px-4 py-10 md:px-8 md:py-14">
                 {menu.map((cat) => (
@@ -418,6 +419,7 @@ const ProductList = ({ sectionRefs, setSelectedItem, menu }: { sectionRefs: Reac
                                                     x: e.clientX,
                                                     y: e.clientY,
                                                 })
+                                                console.log("Selected item:", item.name)
                                             }}
                                             className="font-inter text-xl font-semibold text-neutral-700 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-neutral-100 cursor-pointer hover:text-neutral-900 hover:dark:text-neutral-50 hover:scale-101 transition-transform duration-200">
                                             {item.name}

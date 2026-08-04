@@ -4,15 +4,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { number, z } from "zod";
+import { z } from "zod";
 import { IconX, IconPlus, IconUpload, IconChevronDown, IconLoader2 } from "@tabler/icons-react";
 import axios from "axios";
+import Image from "next/image";
 
 // Types
 
 export type Category = {
   id: number;
-  name: string;
+  label: string;
+  number: string;
 };
 
 export type MenuItem = {
@@ -75,22 +77,9 @@ export type MenuItemFormValues = z.infer<typeof menuItemFormSchema> & {
 type MenuItemModalProps = {
   open: boolean;
   onClose: () => void;
-  /**
-   * Pass an existing item to open in edit mode.
-   * Omit (or pass null) to open in add mode.
-   */
   item?: MenuItem | null;
-  /** Pre-loaded categories from the parent */
   categories: Category[];
-  /**
-   * Called after a new category is successfully created so the parent
-   * can refresh its category list and pass the updated list back in.
-   */
   onCategoryAdded?: () => void;
-  /**
-   * The parent should handle the actual POST/PATCH.
-   * Receives the raw FormData so it can forward it to the route.
-   */
   onSubmit: (data: FormData, isEdit: boolean) => Promise<void>;
 };
 
@@ -144,27 +133,38 @@ function CategoryDropdown({
 
   const selected = categories.find((c) => c.id === value);
 
-  async function handleAdd() {
+async function handleAdd() {
     const trimmed = newName.trim();
     if (!trimmed) {
       setAddError("Category name can't be empty");
       return;
     }
+    
     setAdding(true);
     setAddError(null);
     
-      try {
-        const res = await axios("/api/add-category");
-        if (res.status === 200) {
-          setNewName("");
-          onCategoryAdded?.();
+    try {
+      const res = await axios.post("/api/products/add-category", { label: trimmed });
+      
+      if (res.status === 200 || res.status === 201) {
+        
+        if (onCategoryAdded) {
+           onCategoryAdded(); 
         }
-      } catch (err) {
-        setAddError(err instanceof Error ? err.message : "Failed to add category");
-      } finally {
-        setAdding(false);
+        const newId = res.data?.id ?? res.data?.category?.id;
+        
+        if (newId !== undefined) {
+          onChange(Number(newId));
+        }
+
+        setNewName("");
+        setOpen(false);
       }
-    
+    } catch (err) {
+      setAddError(err instanceof Error ? err.message : "Failed to add category");
+    } finally {
+      setAdding(false);
+    }
   }
 
   return (
@@ -176,7 +176,7 @@ function CategoryDropdown({
           ${error ? "border-red-400 focus:ring-red-200" : "border-neutral-300 hover:border-neutral-400"}
           ${!selected ? "text-zinc-400" : "text-zinc-900"}`}
       >
-        <span className="font-inter">{selected ? selected.name : "Select a category"}</span>
+        <span className="font-inter">{selected ? selected.label : "Select a category"}</span>
         <IconChevronDown
           size={15}
           stroke={2}
@@ -214,7 +214,7 @@ function CategoryDropdown({
                       : "text-zinc-700 hover:bg-zinc-50"
                     }`}
                 >
-                  {c.name}
+                  {c.label}
                 </button>
               ))}
             </div>
@@ -245,7 +245,8 @@ function CategoryDropdown({
                   type="button"
                   onClick={handleAdd}
                   disabled={adding}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium rounded-md transition-colors disabled:opacity-60 flex-shrink-0 font-inter"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium rounded-md transition-colors
+                   disabled:opacity-60 flex-shrink-0 font-inter cursor-pointer"
                 >
                   {adding ? (
                     <IconLoader2 size={13} className="animate-spin" />
@@ -290,10 +291,11 @@ function ImagePicker({ value, onChange, existingUrl, error }: ImagePickerProps) 
       >
         {preview ? (
           <>
-            <img
+            <Image
               src={preview}
               alt="Preview"
               className="h-full w-full object-cover rounded-lg"
+              fill
             />
             <div className="absolute inset-0 rounded-lg bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
               <span className="text-white text-xs font-medium font-inter">Replace image</span>

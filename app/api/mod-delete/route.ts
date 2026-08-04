@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { auth } from "../../../lib/auth";
 import { APIError } from "better-auth/api";
 import z from "zod";
+import { auth } from "@/app/lib/auth";
 
 const deleteModSchema = z.object({
   userId: z.string().min(1, "User id is required"),

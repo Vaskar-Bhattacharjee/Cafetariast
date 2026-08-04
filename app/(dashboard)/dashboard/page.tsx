@@ -18,58 +18,59 @@ import CategoryPolarChart from "@/app/components/ui/CategoryPolarChart";
 import SettingsPage from "@/app/components/ui/dashboard/Settings";
 import MenuItemModal, { Category, MenuItem } from "@/app/components/ui/dashboard/Menuitemmodal";
 import axios from "axios";
+import { authClient } from "@/app/lib/auth-client";
 
 // --- Contextual Mock Data for a Showcase ---
-const PRODUCTS: MenuItem[] = [
-  {
-    id: 1,
-    name: "Ethiopian Yirgacheffe Dark Roast",
-    category: "Coffee",
-    categoryId: 1,
-    description: "Single-origin Ethiopian coffee with rich chocolate notes.",
-    price: 18.5,
-    status: "Featured",
-    image: "https://images.unsplash.com/photo-1559525839-b184a4d698c7?q=80&w=100&auto=format&fit=crop",
-    imagePublicId: "coffee1",
-    alt: "Ethiopian Yirgacheffe Dark Roast",
-  },
-  {
-    id: 2,
-    name: "Almond Butter Croissant",
-    category: "Pastry",
-    categoryId: 2,
-    description: "Freshly baked croissant filled with almond butter.",
-    price: 6.25,
-    status: "Visible",
-    image: "https://images.unsplash.com/photo-1549903072-7e6e0d6594cb?q=80&w=100&auto=format&fit=crop",
-    imagePublicId: "pastry1",
-    alt: "Almond Butter Croissant",
-  },
-  {
-    id: 3,
-    name: "Ceremonial Matcha Latte",
-    category: "Specialty",
-    categoryId: 3,
-    description: "Premium ceremonial-grade matcha blended with milk.",
-    price: 5.5,
-    status: "Visible",
-    image: "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?q=80&w=100&auto=format&fit=crop",
-    imagePublicId: "specialty1",
-    alt: "Ceremonial Matcha Latte",
-  },
-  {
-    id: 4,
-    name: "Smoked Salmon Bagel",
-    category: "Food",
-    categoryId: 4,
-    description: "Toasted bagel with smoked salmon and cream cheese.",
-    price: 12,
-    status: "Hidden",
-    image: "https://images.unsplash.com/photo-1627308595171-d1b5d67129c4?q=80&w=100&auto=format&fit=crop",
-    imagePublicId: "food1",
-    alt: "Smoked Salmon Bagel",
-  },
-];
+// const PRODUCTS: MenuItem[] = [
+//   {
+//     id: 1,
+//     name: "Ethiopian Yirgacheffe Dark Roast",
+//     category: "Coffee",
+//     categoryId: 1,
+//     description: "Single-origin Ethiopian coffee with rich chocolate notes.",
+//     price: 18.5,
+//     status: "Featured",
+//     image: "https://images.unsplash.com/photo-1559525839-b184a4d698c7?q=80&w=100&auto=format&fit=crop",
+//     imagePublicId: "coffee1",
+//     alt: "Ethiopian Yirgacheffe Dark Roast",
+//   },
+//   {
+//     id: 2,
+//     name: "Almond Butter Croissant",
+//     category: "Pastry",
+//     categoryId: 2,
+//     description: "Freshly baked croissant filled with almond butter.",
+//     price: 6.25,
+//     status: "Visible",
+//     image: "https://images.unsplash.com/photo-1549903072-7e6e0d6594cb?q=80&w=100&auto=format&fit=crop",
+//     imagePublicId: "pastry1",
+//     alt: "Almond Butter Croissant",
+//   },
+//   {
+//     id: 3,
+//     name: "Ceremonial Matcha Latte",
+//     category: "Specialty",
+//     categoryId: 3,
+//     description: "Premium ceremonial-grade matcha blended with milk.",
+//     price: 5.5,
+//     status: "Visible",
+//     image: "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?q=80&w=100&auto=format&fit=crop",
+//     imagePublicId: "specialty1",
+//     alt: "Ceremonial Matcha Latte",
+//   },
+//   {
+//     id: 4,
+//     name: "Smoked Salmon Bagel",
+//     category: "Food",
+//     categoryId: 4,
+//     description: "Toasted bagel with smoked salmon and cream cheese.",
+//     price: 12,
+//     status: "Hidden",
+//     image: "https://images.unsplash.com/photo-1627308595171-d1b5d67129c4?q=80&w=100&auto=format&fit=crop",
+//     imagePublicId: "food1",
+//     alt: "Smoked Salmon Bagel",
+//   },
+// ];
 
 export default function CafetariastDashboard() {
     const [activeMenu, setActiveMenu] = useState<number | null>(null);
@@ -80,19 +81,29 @@ export default function CafetariastDashboard() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [userName, setUserName] = useState<string>("");
+    const [userPosition, setUserPosition] = useState<string>("");
+    const [openProfileModal, setOpenProfileModal] = useState(false);
+    const [products, setProducts] = useState<MenuItem[]>([])
 
-    const filteredProducts = PRODUCTS.filter((p) => {
+    const filteredProducts = products.filter((p) => {
         const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
         const matchCategory = categoryFilter ? p.category === categoryFilter : true;
         return matchSearch && matchCategory;
     });
-
+    useEffect(() => {
+    authClient.getSession().then((res) => {
+        setUserName(res.data?.user?.name ?? "");
+        setUserPosition(res.data?.user?.role ?? "Moderator")
+    });
+}, []);
     const toggleMenu = (id: number) => {
         setActiveMenu(activeMenu === id ? null : id);
     };
-    const fetchCategories = useCallback(async () => {
+const fetchCategories = useCallback(async () => {
         try {
-            const res = await axios("/api/products/categories");
+            // Added ?t=${Date.now()} to completely bypass Next.js caching
+            const res = await axios(`/api/products/categories?t=${Date.now()}`);
             setCategories(res.data);
         } catch (err) {
             console.error(err);
@@ -104,6 +115,36 @@ export default function CafetariastDashboard() {
             fetchCategories();
         }, 0);
     }, [fetchCategories]);
+
+const fetchItems = useCallback(async () => {
+        try {
+            const res = await axios("/api/products/get-all-products");
+            const flat = res.data.products.flatMap((cat: { id: string; label: string; items: MenuItem[] }) =>
+                cat.items.map((item) => ({ ...item, category: cat.label, categoryId: cat.id }))
+            );
+            setProducts(flat);
+        } catch (err) {
+            console.error(err);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchItems();
+    }, [fetchItems]);
+
+    const handleProductSubmit = async (formData: FormData, isEdit: boolean) => {
+        try {
+            if (isEdit) {
+                await axios.patch("/api/products/edit", formData); 
+            } else {
+                await axios.post("/api/products/add", formData);
+            }
+            await fetchItems(); 
+        } catch (error) {
+            console.error("Failed to save product", error);
+        }
+    };
+
 
     return (
         <div className="flex h-screen bg-[#FFFFFF] font-sans text-zinc-900 selection:bg-zinc-200">
@@ -136,13 +177,17 @@ export default function CafetariastDashboard() {
 
                 {/* Moderator Profile */}
                 <div className="p-4">
-                    <div className="flex items-center space-x-3 px-4 py-3 rounded-xl border border-zinc-200/50 hover:border-zinc-300 transition-colors cursor-pointer">
+                    <div
+                    onClick={() => { 
+                        setOpenProfileModal(true);
+                     }}
+                    className="flex items-center space-x-3 px-4 py-3 rounded-xl border border-zinc-200/50 hover:border-zinc-300 transition-colors cursor-pointer">
                         <div className="h-8 w-8 rounded-full bg-zinc-900 flex items-center justify-center text-white font-medium text-xs">
-                            M
+                            {userName.split(" ").map((n) => n[0]).join("").toUpperCase()}   
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-sm font-semibold leading-tight">Moderator</span>
-                            <span className="text-xs text-zinc-500 font-medium">Admin Access</span>
+                            <span className="text-sm font-semibold leading-tight">{userName}</span>
+                            <span className="text-xs text-zinc-500 font-medium">{userPosition}</span>
                         </div>
                     </div>
                 </div>
@@ -162,6 +207,7 @@ export default function CafetariastDashboard() {
                         toggleMenu={toggleMenu}
                         onAddClick={() => { setEditingItem(null); setModalOpen(true); }}
                         onEditClick={(item) => { setEditingItem(item); setModalOpen(true); }}
+                        filteredProducts={filteredProducts}
                     />
                 )}
                 {activeTab === "settings" && (
@@ -174,7 +220,7 @@ export default function CafetariastDashboard() {
                 item={editingItem}
                 categories={categories}
                 onCategoryAdded={fetchCategories}
-                onSubmit={async () => { }}
+                onSubmit={handleProductSubmit}
 
             />
         </div>
@@ -192,6 +238,7 @@ type DashboardProps = {
     toggleMenu: (id: number) => void;
     onAddClick: () => void;
     onEditClick: (item: MenuItem) => void;
+    filteredProducts: MenuItem[];
 };
 const Dashboard = (
     {
@@ -204,7 +251,8 @@ const Dashboard = (
         activeMenu,
         toggleMenu,
         onAddClick,
-        onEditClick
+        onEditClick,
+        filteredProducts
     }: DashboardProps
 ) => {
     return (
@@ -312,7 +360,7 @@ const Dashboard = (
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-neutral-600/20 divide-dashed">
-                                {PRODUCTS.map((product) => (
+                                {filteredProducts.map((product) => (
                                     <tr key={product.id} className="hover:bg-zinc-50/50 transition-colors group">
 
                                         {/* Name & Image Box */}

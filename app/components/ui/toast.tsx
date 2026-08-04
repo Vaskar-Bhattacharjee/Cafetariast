@@ -42,11 +42,18 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
 }
 
 function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
+  const type = (props.toast as { type?: string })?.type;
   return (
     <ToastPrimitive.Root
       data-slot="toast"
       className={cn(
-        "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-2xl border bg-popover text-popover-foreground shadow-lg will-change-transform outline-none select-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-2xl border shadow-lg will-change-transform outline-none select-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        !type && "bg-popover text-popover-foreground border-border",
+        type === "success" && "bg-emerald-50 text-emerald-900 border-emerald-200",
+        type === "error" && "bg-red-50 text-red-900 border-red-200",
+        type === "warning" && "bg-amber-50 text-amber-900 border-amber-200",
+        type === "info" && "bg-blue-50 text-blue-900 border-blue-200",
+        type === "loading" && "bg-popover text-popover-foreground border-border",
         "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
         "h-(--height) [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_500ms_cubic-bezier(0.22,1,0.36,1),opacity_500ms,height_150ms]",
         "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
@@ -85,7 +92,7 @@ function ToastTitle({ className, ...props }: ToastPrimitive.Title.Props) {
   return (
     <ToastPrimitive.Title
       data-slot="toast-title"
-      className={cn("text-sm font-medium", className)}
+      className={cn("text-md font-inter font-medium", className)}
       {...props}
     />
   )
@@ -98,7 +105,7 @@ function ToastDescription({
   return (
     <ToastPrimitive.Description
       data-slot="toast-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-sm font-inter text-muted-foreground", className)}
       {...props}
     />
   )
@@ -145,23 +152,23 @@ function ToastIcon({ type }: { type: string | undefined }) {
   let icon: React.ReactNode = null
 
   if (type === "success") {
-    icon = <IconCircleCheck aria-hidden="true" />
+    icon = <IconCircleCheck className="size-6" aria-hidden="true" />
   }
 
   if (type === "info") {
-    icon = <IconInfoCircle aria-hidden="true" />
+    icon = <IconInfoCircle className="size-6" aria-hidden="true" />
   }
 
   if (type === "warning") {
-    icon = <IconTriangle aria-hidden="true" />
+    icon = <IconTriangle className="size-6" aria-hidden="true" />
   }
 
   if (type === "error") {
-    icon = <IconOctagon className="text-destructive" aria-hidden="true" />
+    icon = <IconOctagon className="text-destructive size-6" aria-hidden="true" />
   }
 
   if (type === "loading") {
-    icon = <IconLoader className="animate-spin" aria-hidden="true" />
+    icon = <IconLoader className="animate-spin size-6" aria-hidden="true" />
   }
 
   if (!icon) {

@@ -8,7 +8,7 @@ export async function GET() {
     const items = await db.select().from(menuItemsTable);
 
     const menu = categories.map((category) => ({
-      id: category.slug,
+      id: category.id.toString(),
       label: category.label,
       number: category.number,
       items: items

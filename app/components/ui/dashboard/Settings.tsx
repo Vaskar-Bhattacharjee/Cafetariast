@@ -3,7 +3,7 @@ import SecurityTab from "./SecurityTab";
 import TeamsTab from "./TeamsTab";
 import ThemesTab from "./ThemeTab";
 import { useState } from "react";
-import { IconUsers, IconShield, IconPalette, IconDashboard, IconSettings } from "@tabler/icons-react";
+import { IconUsers, IconShield, IconPalette } from "@tabler/icons-react";
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState("teams");
